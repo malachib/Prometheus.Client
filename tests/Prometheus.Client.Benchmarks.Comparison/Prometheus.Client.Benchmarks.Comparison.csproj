@@ -1,0 +1,28 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <TargetFramework>netcoreapp2.2</TargetFramework>
+    <OutputType>Exe</OutputType>
+    <NoWarn>SA1133</NoWarn>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <PackageReference Include="BenchmarkDotNet" Version="0.11.5" />
+    <PackageReference Include="prometheus-net" Version="3.3.0" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Prometheus.Client\Prometheus.Client.csproj" />
+  </ItemGroup>
+
+
+  <Target Name="DisableLegacyExtantions" BeforeTargets="FindReferenceAssembliesForReferences;ResolveReferences">
+    <ItemGroup>
+      <ReferencePath Condition="'%(FileName)' == 'Prometheus.NetStandard'">
+        <Aliases>Their</Aliases>
+      </ReferencePath>
+    </ItemGroup>
+  </Target>
+
+
+</Project>

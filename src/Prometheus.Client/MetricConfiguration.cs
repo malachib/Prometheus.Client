@@ -5,17 +5,17 @@ using Prometheus.Client.Collectors;
 
 namespace Prometheus.Client
 {
-    public class MetricConfiguration : CollectorConfiguration
+    public class MetricConfiguration: CollectorConfiguration
     {
         private static readonly Regex _metricNameLabelRegex = new Regex("^[a-zA-Z_:][a-zA-Z0-9_:]*$", RegexOptions.Compiled);
         private static readonly Regex _reservedLabelRegex = new Regex("^__.*$", RegexOptions.Compiled);
 
-        public MetricConfiguration(string name, string help, bool includeTimestamp, bool suppressEmptySamples, IReadOnlyList<string> labels)
+        public MetricConfiguration(string name, string help, IReadOnlyList<string> labels, MetricFlags options)
             : base(name)
         {
             Help = help;
-            IncludeTimestamp = includeTimestamp;
-            SuppressEmptySamples = suppressEmptySamples;
+            IncludeTimestamp = options.HasFlag(MetricFlags.IncludeTimestamp);
+            SuppressEmptySamples = options.HasFlag(MetricFlags.SupressEmptySamples);
             LabelNames = labels ?? Array.Empty<string>();
 
             if (!_metricNameLabelRegex.IsMatch(Name))
@@ -23,6 +23,9 @@ namespace Prometheus.Client
 
             foreach (string labelName in LabelNames)
             {
+                if (string.IsNullOrEmpty(labelName))
+                    throw new ArgumentException("Label name cannot be empty");
+
                 if (!_metricNameLabelRegex.IsMatch(labelName))
                     throw new ArgumentException("Label name must match regex: " + _metricNameLabelRegex);
 

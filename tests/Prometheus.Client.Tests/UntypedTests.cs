@@ -1,17 +1,13 @@
 using System;
-using System.IO;
-using System.Threading.Tasks;
 using NSubstitute;
 using Prometheus.Client.Collectors;
 using Prometheus.Client.Collectors.Abstractions;
-using Prometheus.Client.MetricsWriter;
 using Prometheus.Client.MetricsWriter.Abstractions;
-using Prometheus.Client.Tests.Resources;
 using Xunit;
 
 namespace Prometheus.Client.Tests
 {
-    public class UntypedTests : BaseTests
+    public class UntypedTestsA : BaseMetricTests
     {
         [Theory]
         [MemberData(nameof(GetLabels))]
@@ -72,70 +68,6 @@ namespace Prometheus.Client.Tests
         }
 
         [Fact]
-        public async Task Collection()
-        {
-            var registry = new CollectorRegistry();
-            var factory = new MetricFactory(registry);
-
-            var untyped = factory.CreateUntyped("test", "with help text", "category");
-            untyped.Set(1);
-            untyped.WithLabels("some").Set(double.NaN);
-
-            var untyped2 = factory.CreateUntyped("nextuntyped", "with help text", "group", "type");
-            untyped2.Set(10);
-            untyped2.WithLabels("any", "2").Set(5);
-
-            string formattedText = null;
-
-            using (var stream = new MemoryStream())
-            {
-                using (var writer = new MetricsTextWriter(stream))
-                {
-                    ((ICollector)untyped).Collect(writer);
-                    ((ICollector)untyped2).Collect(writer);
-                    await writer.CloseWriterAsync();
-                }
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                using (var streamReader = new StreamReader(stream))
-                {
-                    formattedText = streamReader.ReadToEnd();
-                }
-            }
-
-            Assert.Equal(ResourcesHelper.GetFileContent("UntypedTests_Collection.txt"), formattedText);
-        }
-
-        [Fact]
-        public async Task EmptyCollection()
-        {
-            var registry = new CollectorRegistry();
-            var factory = new MetricFactory(registry);
-
-            var untyped = factory.CreateUntyped("test", "with help text", false, false, "category");
-            string formattedText = null;
-
-            using (var stream = new MemoryStream())
-            {
-                using (var writer = new MetricsTextWriter(stream))
-                {
-                    ((ICollector)untyped).Collect(writer);
-                    await writer.CloseWriterAsync();
-                }
-
-                stream.Seek(0, SeekOrigin.Begin);
-
-                using (var streamReader = new StreamReader(stream))
-                {
-                    formattedText = streamReader.ReadToEnd();
-                }
-            }
-
-            Assert.Equal(ResourcesHelper.GetFileContent("UntypedTests_Empty.txt"), formattedText);
-        }
-
-        [Fact]
         public void SameLabelReturnsSameMetric()
         {
             var registry = new CollectorRegistry();
@@ -172,7 +104,7 @@ namespace Prometheus.Client.Tests
             var labeled = untyped.WithLabels("value");
             labeled.Set(3);
 
-            Assert.Equal(2, untyped.Value);
+            Assert.Equal(2, untyped.Unlabelled.Value);
             Assert.Equal(3, labeled.Value);
         }
 
@@ -185,7 +117,7 @@ namespace Prometheus.Client.Tests
             var untyped = factory.CreateUntyped("test_untyped", string.Empty);
             untyped.Set(2);
 
-            Assert.Equal(2, untyped.Value);
+            Assert.Equal(2, untyped.Unlabelled.Value);
         }
 
         [Fact]
@@ -197,7 +129,7 @@ namespace Prometheus.Client.Tests
             var untyped = factory.CreateUntyped("test_untyped", string.Empty);
             untyped.Set(double.NaN);
 
-            Assert.Equal(double.NaN, untyped.Value);
+            Assert.Equal(double.NaN, untyped.Unlabelled.Value);
         }
     }
 }

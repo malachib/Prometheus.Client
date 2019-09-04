@@ -10,6 +10,7 @@ namespace Prometheus.Client
 
         public ThreadSafeDouble(double value)
         {
+            // TODO: replace this magic with Interlocked.Exchange(double)
             _value = BitConverter.DoubleToInt64Bits(value);
         }
 

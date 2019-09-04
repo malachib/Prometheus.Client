@@ -1,78 +1,44 @@
 using System;
+using System.Collections.Generic;
 using Prometheus.Client.Abstractions;
-using Prometheus.Client.Collectors;
 using Prometheus.Client.MetricsWriter;
 using Prometheus.Client.MetricsWriter.Abstractions;
 
 namespace Prometheus.Client
 {
-    public class CounterInt64 : Collector<CounterInt64.LabelledCounter, MetricConfiguration>, ICounter<long>
+    public class CounterInt64 : MetricBase<MetricConfiguration>, ICounter<long>
     {
-        internal CounterInt64(MetricConfiguration configuration)
-            : base(configuration)
+        private ThreadSafeLong _value;
+
+        public CounterInt64(MetricConfiguration configuration, IReadOnlyList<string> labels)
+            : base(configuration, labels)
         {
         }
 
-        protected override MetricType Type => MetricType.Counter;
-
         public void Inc()
         {
-            Unlabelled.Inc();
+            Inc(1, null);
         }
 
         public void Inc(long increment)
         {
-            Unlabelled.Inc(increment);
+            Inc(increment, null);
         }
 
         public void Inc(long increment, long? timestamp)
         {
-            Unlabelled.Inc(increment, timestamp);
+            if (increment < 0)
+                throw new ArgumentOutOfRangeException(nameof(increment), "Counter cannot go down");
+
+            _value.Add(increment);
+            TimestampIfRequired(timestamp);
         }
 
-        public long Value => Unlabelled.Value;
+        public long Value => _value.Value;
 
-        public void Reset()
+        protected internal override void Collect(IMetricsWriter writer)
         {
-            Unlabelled.ResetValue();
-            foreach (var labelledMetric in LabelledMetrics)
-                labelledMetric.Value.ResetValue();
-        }
-
-        public class LabelledCounter : Labelled<MetricConfiguration>, ICounter<long>
-        {
-            private ThreadSafeLong _value;
-
-            public void Inc()
-            {
-                Inc(1, null);
-            }
-
-            public void Inc(long increment)
-            {
-                Inc(increment, null);
-            }
-
-            public void Inc(long increment, long? timestamp)
-            {
-                if (increment < 0)
-                    throw new ArgumentOutOfRangeException(nameof(increment), "Counter cannot go down");
-
-                _value.Add(increment);
-                TimestampIfRequired(timestamp);
-            }
-
-            public long Value => _value.Value;
-
-            protected internal override void Collect(IMetricsWriter writer)
-            {
-                writer.WriteSample(Value, string.Empty, Labels, Timestamp);
-            }
-
-            internal void ResetValue()
-            {
-                _value.Value = 0;
-            }
+            writer.WriteSample(Value, string.Empty, Labels, Timestamp);
         }
     }
 }

@@ -1,20 +1,34 @@
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Threading;
-using Prometheus.Client.Collectors;
 using Prometheus.Client.MetricsWriter.Abstractions;
 
 namespace Prometheus.Client
 {
-    public abstract class Labelled<TConfig>
-        where TConfig : MetricConfiguration
+    public abstract class MetricBase<TConfig>
+        where TConfig: MetricConfiguration
     {
-        private LabelValues _labelValues;
+        protected readonly TConfig Configuration;
         private long _timestamp;
         private long _hasObservation = 0;
-        protected TConfig Configuration;
 
-        protected IReadOnlyList<KeyValuePair<string, string>> Labels => _labelValues.Labels;
+        protected IReadOnlyList<KeyValuePair<string, string>> Labels { get; }
+
+        protected MetricBase(TConfig config, IReadOnlyList<string> labelValues)
+        {
+            Configuration = config;
+
+            if (labelValues != null && labelValues.Count > 0)
+            {
+                if (config.LabelNames.Count != labelValues.Count)
+                    throw new ArgumentException("Incorrect number of labels");
+
+                Labels = config.LabelNames.Zip(labelValues, (name, value) => new KeyValuePair<string, string>(name, value)).ToArray();
+            }
+        }
+
+        public bool HasObservations => Interlocked.Read(ref _hasObservation) != 0;
 
         protected long? Timestamp
         {
@@ -25,14 +39,6 @@ namespace Prometheus.Client
 
                 return Interlocked.Read(ref _timestamp);
             }
-        }
-
-        public bool HasObservations => Interlocked.Read(ref _hasObservation) != 0;
-
-        protected internal virtual void Init(LabelValues labelValues, TConfig configuration)
-        {
-            _labelValues = labelValues;
-            Configuration = configuration;
         }
 
         protected internal abstract void Collect(IMetricsWriter writer);
