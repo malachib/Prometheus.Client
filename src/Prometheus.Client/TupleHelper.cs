@@ -45,11 +45,7 @@ namespace Prometheus.Client
             return _parser(values);
         }
 
-        public static bool AreSame(TTuple left, IReadOnlyList<string> right)
-        {
-            var rightAsTuple = FromArray(right);
-            return left.Equals(rightAsTuple);
-        }
+        public static int Length => _size;
     }
 
     internal static class TupleHelper

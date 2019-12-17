@@ -2,7 +2,9 @@ using System;
 using System.Collections.Concurrent;
 using System.Collections.Generic;
 using System.Linq;
+#if HasITuple
 using System.Runtime.CompilerServices;
+#endif
 using Prometheus.Client.Abstractions;
 using Prometheus.Client.Collectors.Abstractions;
 using Prometheus.Client.MetricsWriter;
@@ -60,6 +62,9 @@ namespace Prometheus.Client
             if (_labelledMetrics == null)
                 throw new InvalidOperationException("Metric family does not have any labels");
 
+            if (labels.Length != _configuration.LabelNames.Count)
+                throw new ArgumentException("Wrong number of labels");
+
             var labelsTuple = TupleHelper<TLabels>.FromArray(labels);
             return _labelledMetrics.GetOrAdd(labelsTuple, CreateLabelled);
         }
@@ -115,7 +120,6 @@ namespace Prometheus.Client
         {
             var labelValues = TupleHelper<TLabels>.ToArray(labels);
 
-            // TODO: add more validation here
             if (labelValues.Any(string.IsNullOrEmpty))
                 throw new ArgumentException("Label cannot be empty.");
 

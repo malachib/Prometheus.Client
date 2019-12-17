@@ -16,6 +16,27 @@ namespace Prometheus.Client.Tests.CounterTests
             Assert.ThrowsAny<ArgumentException>(() => factory.CreateCounter("test_counter", string.Empty, label));
         }
 
+        [Theory]
+        [MemberData(nameof(InvalidLabels))]
+        public void ThrowOnInvalidLabels_Tuple(string label)
+        {
+            var registry = new CollectorRegistry();
+            var factory = new MetricFactory(registry);
+
+            Assert.ThrowsAny<ArgumentException>(() => factory.CreateCounter("test_counter", string.Empty, ValueTuple.Create(label)));
+        }
+
+        [Fact]
+        public void ThrowOnNameConflict()
+        {
+            var registry = new CollectorRegistry();
+            var factory = new MetricFactory(registry);
+
+            factory.CreateCounter("test_counter", string.Empty, "label1", "label2");
+
+            Assert.ThrowsAny<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, "testlabel"));
+        }
+
         [Fact]
         public void SameLabelsProducesSameMetric_Strings()
         {
@@ -100,17 +121,6 @@ namespace Prometheus.Client.Tests.CounterTests
 
             // Cannot compare metrics families, because of different contracts, should check if sample the same
             Assert.Equal(counter1.Unlabelled, counter2.Unlabelled);
-        }
-
-        [Theory]
-        [MemberData(nameof(GetLabels))]
-        public void ThrowOnLabelsMismatch(params string[] labels)
-        {
-            var registry = new CollectorRegistry();
-            var factory = new MetricFactory(registry);
-
-            var counter = factory.CreateCounter("test_counter", string.Empty, "label1", "label2");
-            Assert.ThrowsAny<ArgumentException>(() => counter.WithLabels(labels));
         }
     }
 }

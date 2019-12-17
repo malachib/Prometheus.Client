@@ -39,7 +39,7 @@ namespace Prometheus.Client.Tests.GaugeTests
         {
             var gauge = CreateGauge();
             gauge.Set(value);
-            
+
             Assert.Equal(value, gauge.Value);
         }
 

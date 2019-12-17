@@ -447,6 +447,7 @@ namespace Prometheus.Client
             return metric;
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         private TCollector TryGetByName<TCollector>(string name)
         {
             if (_registry.TryGet(name, out var collector))
@@ -456,7 +457,7 @@ namespace Prometheus.Client
                     return metric;
                 }
 
-                throw new InvalidOperationException($"Duplicated collector name: {name}");
+                ThrowLabelsValidationExceprion();
             }
 
             return default;
@@ -480,8 +481,8 @@ namespace Prometheus.Client
             if (expectedNames == null && actualNames == null)
                 return;
 
-            expectedNames = expectedNames ?? Array.Empty<string>();
-            actualNames = actualNames ?? Array.Empty<string>();
+            expectedNames ??= Array.Empty<string>();
+            actualNames ??= Array.Empty<string>();
 
             if (!expectedNames.SequenceEqual(actualNames))
                 ThrowLabelsValidationExceprion();
@@ -489,7 +490,7 @@ namespace Prometheus.Client
 
         private static void ThrowLabelsValidationExceprion()
         {
-            throw new ArgumentException("Collector with same name must have same label names");
+            throw new InvalidOperationException("Collector with same name must have same type and same label names");
         }
 
         internal MetricFamily<ICounter, Counter, TLabels, MetricConfiguration> CreateCounterInternal<TLabels>(MetricConfiguration configuration)
