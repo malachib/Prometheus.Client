@@ -13,7 +13,7 @@ namespace Prometheus.Client.Tests.CounterTests
             var registry = new CollectorRegistry();
             var factory = new MetricFactory(registry);
 
-            Assert.ThrowsAny<ArgumentException>(() => factory.CreateCounter("test_counter", string.Empty, label));
+            Assert.Throws<ArgumentException>(() => factory.CreateCounter("test_counter", string.Empty, "label1", label));
         }
 
         [Theory]
@@ -23,18 +23,44 @@ namespace Prometheus.Client.Tests.CounterTests
             var registry = new CollectorRegistry();
             var factory = new MetricFactory(registry);
 
-            Assert.ThrowsAny<ArgumentException>(() => factory.CreateCounter("test_counter", string.Empty, ValueTuple.Create(label)));
+            Assert.Throws<ArgumentException>(() => factory.CreateCounter("test_counter", string.Empty, ValueTuple.Create(label)));
         }
 
         [Fact]
-        public void ThrowOnNameConflict()
+        public void ThrowOnNameConflict_Strings()
         {
             var registry = new CollectorRegistry();
             var factory = new MetricFactory(registry);
 
             factory.CreateCounter("test_counter", string.Empty, "label1", "label2");
 
-            Assert.ThrowsAny<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, "testlabel"));
+            Assert.Throws<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, "label1", "testlabel"));
+            Assert.Throws<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, new[] { "label1" }));
+            Assert.Throws<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, "label1", "label2", "label3"));
+        }
+
+        [Fact]
+        public void ThrowOnNameConflict_Tuple()
+        {
+            var registry = new CollectorRegistry();
+            var factory = new MetricFactory(registry);
+
+            factory.CreateCounter("test_counter", string.Empty, ("label1", "label2"));
+
+            Assert.Throws<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, ValueTuple.Create("label1")));
+            Assert.Throws<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, ("label1", "testlabel")));
+            Assert.Throws<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, ("label1", "label2", "label3")));
+        }
+
+        [Fact]
+        public void ThrowOnNameConflict_StringAndTuple()
+        {
+            var registry = new CollectorRegistry();
+            var factory = new MetricFactory(registry);
+
+            factory.CreateCounter("test_counter", string.Empty, ("label1", "label2"));
+
+            Assert.Throws<InvalidOperationException>(() => factory.CreateCounter("test_counter", string.Empty, ("label1", "testlabel")));
         }
 
         [Fact]
