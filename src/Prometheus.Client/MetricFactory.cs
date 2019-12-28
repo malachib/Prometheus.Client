@@ -1,6 +1,5 @@
 using System;
 using System.Collections.Generic;
-using System.Linq;
 using System.Linq.Expressions;
 using System.Runtime.CompilerServices;
 using Prometheus.Client.Abstractions;
@@ -453,9 +452,7 @@ namespace Prometheus.Client
             if (_registry.TryGet(name, out var collector))
             {
                 if (collector is TCollector metric)
-                {
                     return metric;
-                }
 
                 ThrowLabelsValidationExceprion();
             }
@@ -484,8 +481,14 @@ namespace Prometheus.Client
             expectedNames ??= Array.Empty<string>();
             actualNames ??= Array.Empty<string>();
 
-            if (!expectedNames.SequenceEqual(actualNames))
+            if (expectedNames.Count != actualNames.Count)
                 ThrowLabelsValidationExceprion();
+
+            for (var i = 0; i < expectedNames.Count; i++)
+            {
+                if(expectedNames[i] != actualNames[i])
+                    ThrowLabelsValidationExceprion();
+            }
         }
 
         private static void ThrowLabelsValidationExceprion()

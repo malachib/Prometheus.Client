@@ -12,9 +12,6 @@ namespace Prometheus.Client.Benchmarks.Comparison
     {
         private const int _metricsPerIteration = 10000;
 
-        /// <summary>
-        /// Some benchmarks try to register metrics that already exist.
-        /// </summary>
         private const int _duplicateCount = 5;
 
         private const string _help = "arbitrary help message for metric, not relevant for benchmarking";
@@ -41,35 +38,40 @@ namespace Prometheus.Client.Benchmarks.Comparison
             _theirFactory = Their.Prometheus.Metrics.WithCustomRegistry(registry);
         }
 
-        [Benchmark(Baseline = true), BenchmarkCategory("Counter_Single")]
+        [Benchmark(Baseline = true)]
+        [BenchmarkCategory("Counter_Single")]
         public void Counter_SingleBaseLine()
         {
             for (var i = 0; i < _metricsPerIteration; i++)
                 _theirFactory.CreateCounter("testcounter", _help);
         }
 
-        [Benchmark, BenchmarkCategory("Counter_Single")]
+        [Benchmark]
+        [BenchmarkCategory("Counter_Single")]
         public void Counter_Single()
         {
             for (var i = 0; i < _metricsPerIteration; i++)
                 _factory.CreateCounter("testcounter", _help);
         }
 
-        [Benchmark(Baseline = true), BenchmarkCategory("Counter_Single_WithLabels")]
+        [Benchmark(Baseline = true)]
+        [BenchmarkCategory("Counter_Single_WithLabels")]
         public void Counter_SingleLabelsBaseLine()
         {
             for (var i = 0; i < _metricsPerIteration; i++)
                 _theirFactory.CreateCounter("testcounter", _help, "foo", "bar", "baz");
         }
 
-        [Benchmark, BenchmarkCategory("Counter_Single_WithLabels")]
+        [Benchmark]
+        [BenchmarkCategory("Counter_Single_WithLabels")]
         public void Counter_SingleLabels()
         {
             for (var i = 0; i < _metricsPerIteration; i++)
                 _factory.CreateCounter("testcounter", _help, "foo", "bar", "baz");
         }
 
-        [Benchmark, BenchmarkCategory("Counter_Single_WithLabels")]
+        [Benchmark]
+        [BenchmarkCategory("Counter_Single_WithLabels")]
         public void Counter_SingleLabelsTuple()
         {
             for (var i = 0; i < _metricsPerIteration; i++)

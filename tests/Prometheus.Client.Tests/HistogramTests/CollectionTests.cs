@@ -4,7 +4,7 @@ using Prometheus.Client;
 
 namespace Prometheus.Client.Tests.HistogramTests
 {
-    public class CollectionTests : BaseMetricTests
+    public class CollectionTests : MetricTestBase
     {
         private const string _resourcesNamespace = "Prometheus.Client.Tests.HistogramTests.Resources";
 

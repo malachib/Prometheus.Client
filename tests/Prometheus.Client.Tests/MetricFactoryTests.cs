@@ -1,4 +1,3 @@
-using System;
 using Prometheus.Client.Collectors;
 using Xunit;
 
@@ -6,16 +5,6 @@ namespace Prometheus.Client.Tests
 {
     public class MetricFactoryTests
     {
-        [Fact]
-        public void ThrowOnDuplicatedMetricNames()
-        {
-            var registry = new CollectorRegistry();
-            var factory = new MetricFactory(registry);
-
-            factory.CreateCounter("test", "");
-            Assert.Throws<InvalidOperationException>(() => factory.CreateGauge("test", ""));
-        }
-
         [Theory]
         [InlineData(0)]
         [InlineData(1)]

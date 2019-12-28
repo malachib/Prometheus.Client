@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Prometheus.Client.Tests.UntypedTests
 {
-    public class CollectionTests : BaseMetricTests
+    public class CollectionTests : MetricTestBase
     {
         private const string _resourcesNamespace = "Prometheus.Client.Tests.UntypedTests.Resources";
 

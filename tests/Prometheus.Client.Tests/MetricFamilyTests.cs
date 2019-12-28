@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Prometheus.Client.Tests
 {
-    public class MetricFamilyTests : BaseMetricTests
+    public class MetricFamilyTests : MetricTestBase
     {
         [Fact]
         public void SameLabelReturnsSameSample()

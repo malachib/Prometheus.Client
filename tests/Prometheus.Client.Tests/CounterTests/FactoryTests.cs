@@ -4,7 +4,7 @@ using Xunit;
 
 namespace Prometheus.Client.Tests.CounterTests
 {
-    public class FactoryTests : BaseMetricTests
+    public class FactoryTests : MetricTestBase
     {
         [Theory]
         [MemberData(nameof(InvalidLabels))]

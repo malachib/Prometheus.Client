@@ -3,15 +3,9 @@ using Xunit;
 
 namespace Prometheus.Client.Tests.CounterTests
 {
-    public class SampleTests : BaseMetricTests
+    public class SampleTests : MetricTestBase
     {
         // TODO: add timestamp test
-
-        private Counter CreateCounter(MetricFlags options = MetricFlags.Default)
-        {
-            var config = new MetricConfiguration("test", string.Empty, Array.Empty<string>(), options);
-            return new Counter(config, Array.Empty<string>());
-        }
 
         [Theory]
         [InlineData(0)]
@@ -41,6 +35,12 @@ namespace Prometheus.Client.Tests.CounterTests
             counter.Inc();
 
             Assert.Equal(1, counter.Value);
+        }
+
+        private Counter CreateCounter(MetricFlags options = MetricFlags.Default)
+        {
+            var config = new MetricConfiguration("test", string.Empty, Array.Empty<string>(), options);
+            return new Counter(config, Array.Empty<string>());
         }
     }
 }

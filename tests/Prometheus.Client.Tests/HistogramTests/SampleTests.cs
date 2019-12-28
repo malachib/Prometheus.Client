@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Prometheus.Client.Tests.HistogramTests
 {
-    public class SampleTests : BaseMetricTests
+    public class SampleTests : MetricTestBase
     {
         [Theory]
         [MemberData(nameof(SumTestCases))]
