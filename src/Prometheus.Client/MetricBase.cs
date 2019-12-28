@@ -11,7 +11,7 @@ namespace Prometheus.Client
     {
         protected readonly TConfig Configuration;
         private long _timestamp;
-        private long _hasObservation = 0;
+        private long _hasObservation;
 
         protected IReadOnlyList<KeyValuePair<string, string>> Labels { get; }
 

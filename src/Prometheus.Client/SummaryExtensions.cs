@@ -1,6 +1,8 @@
 using System;
 using System.Collections.Generic;
+#if HasITuple
 using System.Runtime.CompilerServices;
+#endif
 using Prometheus.Client.Abstractions;
 using Prometheus.Client.SummaryImpl;
 

@@ -1,5 +1,7 @@
 using System;
+#if netstandard1_3
 using System.Linq;
+#endif
 using System.Collections.Generic;
 using System.Linq.Expressions;
 using System.Reflection;
@@ -14,7 +16,7 @@ namespace Prometheus.Client
         where TTuple : struct, IEquatable<TTuple>
 #endif
     {
-        private static int _size;
+        private static readonly int _size;
         private static readonly Func<IReadOnlyList<string>, TTuple> _parser;
         private static readonly Func<TTuple, IReadOnlyList<string>> _formatter;
 
@@ -44,8 +46,6 @@ namespace Prometheus.Client
 
             return _parser(values);
         }
-
-        public static int Length => _size;
     }
 
     internal static class TupleHelper
@@ -143,7 +143,7 @@ namespace Prometheus.Client
             methodBody.Add(resultArray);
 
             return Expression.Lambda<Func<TTuple, IReadOnlyList<string>>>(
-                Expression.Block(new ParameterExpression[] { resultArray }, methodBody), valuesArg).Compile();
+                Expression.Block(new[] { resultArray }, methodBody), valuesArg).Compile();
         }
 
         public static Func<IReadOnlyList<string>, TTuple> GenerateParser<TTuple>()
@@ -177,12 +177,6 @@ namespace Prometheus.Client
             var tupleCreateExpr = BuildUpTuple(resultType, valuesArg, 0);
 
             return Expression.Lambda<Func<IReadOnlyList<string>, TTuple>>(tupleCreateExpr, valuesArg).Compile();
-        }
-
-        [MethodImpl(MethodImplOptions.AggressiveInlining)]
-        private static void Fill<T>(this IList<T> target, T value)
-        {
-            target.Fill(value, 0, target.Count);
         }
 
         [MethodImpl(MethodImplOptions.AggressiveInlining)]

@@ -9,7 +9,7 @@ namespace Prometheus.Client
     /// <inheritdoc cref="ICounter" />
     public class Counter : MetricBase<MetricConfiguration>, ICounter
     {
-        private ThreadSafeDouble _value;
+        private ThreadSafeDouble _value = default;
 
         public Counter(MetricConfiguration configuration, IReadOnlyList<string> labels)
             : base(configuration, labels)

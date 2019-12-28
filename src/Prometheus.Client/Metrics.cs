@@ -15,6 +15,8 @@ namespace Prometheus.Client
 
         public static readonly MetricFactory DefaultFactory = new MetricFactory(DefaultCollectorRegistry);
 
+        // TODO: Implement this
+        
         ///// <summary>
         /////     Create Counter
         ///// </summary>

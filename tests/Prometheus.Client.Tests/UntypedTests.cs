@@ -117,7 +117,7 @@ namespace Prometheus.Client.Tests
             var untyped = factory.CreateUntyped("test_untyped", string.Empty);
             untyped.Set(2);
 
-            Assert.Equal(2, untyped.Unlabelled.Value);
+            Assert.Equal(2, untyped.Value);
         }
 
         [Fact]
@@ -129,7 +129,7 @@ namespace Prometheus.Client.Tests
             var untyped = factory.CreateUntyped("test_untyped", string.Empty);
             untyped.Set(double.NaN);
 
-            Assert.Equal(double.NaN, untyped.Unlabelled.Value);
+            Assert.Equal(double.NaN, untyped.Value);
         }
     }
 }

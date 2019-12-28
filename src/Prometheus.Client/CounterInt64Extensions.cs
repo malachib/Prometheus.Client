@@ -1,5 +1,7 @@
 using System;
+#if HasITuple
 using System.Runtime.CompilerServices;
+#endif
 using Prometheus.Client.Abstractions;
 
 namespace Prometheus.Client

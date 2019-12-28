@@ -290,7 +290,7 @@ namespace Prometheus.Client
         /// <param name="name">Metric name.</param>
         /// <param name="help">Help text.</param>
         /// <param name="options">Metric flags</param>
-        public IUntyped CreateUntyped<TLabels>(string name, string help, MetricFlags options = MetricFlags.Default)
+        public IUntyped CreateUntyped(string name, string help, MetricFlags options = MetricFlags.Default)
         {
             var metric = TryGetByName<IMetricFamily<IUntyped, ValueTuple>>(name);
             if (metric == null)
@@ -632,7 +632,7 @@ namespace Prometheus.Client
                     var targetMethodCall = Expression.Call(
                         factoryParameter,
                         targetMethodName,
-                        new Type[] { labelsTupleType },
+                        new [] { labelsTupleType },
                         configurationParameter);
 
                     tmp[i] = Expression.Lambda<Func<MetricFactory, TConfiguration, IMetricFamily<TMetric>>>(targetMethodCall, factoryParameter, configurationParameter).Compile();
