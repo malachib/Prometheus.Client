@@ -2,6 +2,7 @@ using System;
 using System.Buffers;
 using System.Collections.Generic;
 using System.Linq;
+using System.Runtime.CompilerServices;
 using Prometheus.Client.Abstractions;
 using Prometheus.Client.MetricsWriter;
 using Prometheus.Client.MetricsWriter.Abstractions;
@@ -10,7 +11,7 @@ using Prometheus.Client.SummaryImpl;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="ISummary" />
-    public class Summary : MetricBase<SummaryConfiguration>, ISummary
+    public sealed class Summary : MetricBase<SummaryConfiguration>, ISummary
     {
         private static readonly ArrayPool<double> _arrayPool = ArrayPool<double>.Shared;
         // Protects hotBuf and hotBufExpTime.
@@ -64,7 +65,7 @@ namespace Prometheus.Client
 
         public void Observe(double val)
         {
-            Observe(val, null);
+            Observe(val, null, DateTime.UtcNow);
         }
 
         public void Observe(double val, long? timestamp)
@@ -75,6 +76,7 @@ namespace Prometheus.Client
         /// <summary>
         ///     For unit tests only
         /// </summary>
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         internal void Observe(double val, long? timestamp, DateTime now)
         {
             lock (_bufLock)

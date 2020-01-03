@@ -7,28 +7,41 @@ namespace Prometheus.Client
     internal struct ThreadSafeDouble : IEquatable<ThreadSafeDouble>
     {
         private long _value;
+        private bool _isNan;
 
         public ThreadSafeDouble(double value)
         {
-            // TODO: replace this magic with Interlocked.Exchange(double)
             _value = BitConverter.DoubleToInt64Bits(value);
+            _isNan = IsNaN(value);
         }
 
         public double Value
         {
-            get => BitConverter.Int64BitsToDouble(Interlocked.Read(ref _value));
-            set => Interlocked.Exchange(ref _value, BitConverter.DoubleToInt64Bits(value));
+            get
+            {
+                if (Volatile.Read(ref _isNan))
+                    return double.NaN;
+
+                return BitConverter.Int64BitsToDouble(Interlocked.Read(ref _value));
+            }
+            set
+            {
+                if (IsNaN(value))
+                    Volatile.Write(ref _isNan, true);
+                else
+                    Interlocked.Exchange(ref _value, BitConverter.DoubleToInt64Bits(value));
+            }
         }
 
         public void Add(double increment)
         {
             while (true)
             {
-                long initialValue = Interlocked.Read(ref _value);
-                double computedValue = BitConverter.Int64BitsToDouble(initialValue) + increment;
-
-                if (double.IsNaN(computedValue))
+                if (Volatile.Read(ref _isNan))
                     throw new InvalidOperationException("Cannot increment the NaN value.");
+
+                long initialValue = _value;
+                double computedValue = BitConverter.Int64BitsToDouble(initialValue) + increment;
 
                 if (initialValue == Interlocked.CompareExchange(ref _value, BitConverter.DoubleToInt64Bits(computedValue), initialValue))
                     return;
@@ -56,6 +69,14 @@ namespace Prometheus.Client
         public override int GetHashCode()
         {
             return Value.GetHashCode();
+        }
+
+        internal static bool IsNaN(double val)
+        {
+            if (val >= 0d || val < 0d)
+                return false;
+
+            return true;
         }
     }
 }

@@ -1,3 +1,4 @@
+using System;
 using BenchmarkDotNet.Configs;
 using BenchmarkDotNet.Jobs;
 using BenchmarkDotNet.Running;
@@ -9,19 +10,19 @@ namespace Prometheus.Client.Benchmarks.Comparison
     {
         private static void Main(string[] args)
         {
-            //var b = new MetricCreationBenchmarks();
-            //b.Setup();
-            //b.Counter_Many();
-            //b.Setup();
-            //System.Threading.Thread.Sleep(5000);
-            //System.Console.ReadLine();
+            // var b = new Counter.SampleBenchmarks();
+            // b.Setup();
+            // b.Counter_IncDefault();
+            //
+            // for(int i = 0; i < 100; i++)
+            //     b.Counter_IncDefault();
+            //
+            // Console.ReadLine();
 
-            //b.Counter_Many();
-            //System.Console.ReadLine();
-
-            BenchmarkRunner.Run<MetricCreationBenchmarks>(
+            BenchmarkRunner.Run<Counter.SampleBenchmarks>(
                 DefaultConfig.Instance
                     .With(Job.Default.With(CsProjCoreToolchain.NetCoreApp30)));
+
             //BenchmarkRunner.Run<SerializationBenchmarks>();
             //BenchmarkRunner.Run<LabelBenchmarks>();
             //BenchmarkRunner.Run<HttpExporterBenchmarks>();

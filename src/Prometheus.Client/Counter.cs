@@ -1,5 +1,6 @@
 using System;
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Prometheus.Client.Abstractions;
 using Prometheus.Client.MetricsWriter;
 using Prometheus.Client.MetricsWriter.Abstractions;
@@ -7,7 +8,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="ICounter" />
-    public class Counter : MetricBase<MetricConfiguration>, ICounter
+    public sealed class Counter : MetricBase<MetricConfiguration>, ICounter
     {
         private ThreadSafeDouble _value = default;
 
@@ -26,13 +27,14 @@ namespace Prometheus.Client
             Inc(increment, null);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Inc(double increment, long? timestamp)
         {
-            if (double.IsNaN(increment))
+            if (ThreadSafeDouble.IsNaN(increment))
                 return;
 
             if (increment < 0.0D)
-                throw new ArgumentOutOfRangeException(nameof(increment), "Counter cannot go down");
+                ThrowInvalidIncArgument();
 
             _value.Add(increment);
             TimestampIfRequired(timestamp);
@@ -43,6 +45,11 @@ namespace Prometheus.Client
         protected internal override void Collect(IMetricsWriter writer)
         {
             writer.WriteSample(Value, string.Empty, Labels, Timestamp);
+        }
+
+        private void ThrowInvalidIncArgument()
+        {
+            throw new ArgumentOutOfRangeException("increment", "Counter cannot go down");
         }
     }
 }

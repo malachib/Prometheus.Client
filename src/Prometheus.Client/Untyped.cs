@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Prometheus.Client.Abstractions;
 using Prometheus.Client.MetricsWriter;
 using Prometheus.Client.MetricsWriter.Abstractions;
@@ -6,7 +7,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="IUntyped" />
-    public class Untyped : MetricBase<MetricConfiguration>, IUntyped
+    public sealed class Untyped : MetricBase<MetricConfiguration>, IUntyped
     {
         internal Untyped(MetricConfiguration configuration, IReadOnlyList<string> labels)
             : base(configuration, labels)
@@ -20,6 +21,7 @@ namespace Prometheus.Client
             Set(val, null);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set(double val, long? timestamp)
         {
             _value.Value = val;

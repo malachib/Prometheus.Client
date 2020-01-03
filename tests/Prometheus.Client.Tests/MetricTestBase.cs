@@ -13,9 +13,13 @@ namespace Prometheus.Client.Tests
     {
         public static IEnumerable<object[]> InvalidLabels()
         {
+            yield return new object[] { "" };
+            yield return new object[] { null };
             yield return new object[] { "my-metric" };
             yield return new object[] { "my!metric" };
             yield return new object[] { "my%metric" };
+            yield return new object[] { "123label" };
+            yield return new object[] { "__label" };
         }
 
         protected async Task TestCollectionAsync(Action<MetricFactory> metricsSetup, string resourceName)

@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Prometheus.Client.Abstractions;
 using Prometheus.Client.MetricsWriter;
 using Prometheus.Client.MetricsWriter.Abstractions;
@@ -6,7 +7,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="IHistogram" />
-    public class Histogram : MetricBase<HistogramConfiguration>, IHistogram
+    public sealed class Histogram : MetricBase<HistogramConfiguration>, IHistogram
     {
         private ThreadSafeLong[] _bucketCounts;
         private ThreadSafeDouble _sum = new ThreadSafeDouble(0.0D);
@@ -24,9 +25,10 @@ namespace Prometheus.Client
             Observe(val, null);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Observe(double val, long? timestamp)
         {
-            if (double.IsNaN(val))
+            if (ThreadSafeDouble.IsNaN(val))
                 return;
 
             for (int i = 0; i < Configuration.Buckets.Count; i++)

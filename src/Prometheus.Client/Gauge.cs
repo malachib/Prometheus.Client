@@ -1,4 +1,5 @@
 using System.Collections.Generic;
+using System.Runtime.CompilerServices;
 using Prometheus.Client.Abstractions;
 using Prometheus.Client.MetricsWriter;
 using Prometheus.Client.MetricsWriter.Abstractions;
@@ -6,7 +7,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="IGauge" />
-    public class Gauge : MetricBase<MetricConfiguration>, IGauge
+    public sealed class Gauge : MetricBase<MetricConfiguration>, IGauge
     {
         private ThreadSafeDouble _value;
 
@@ -25,9 +26,10 @@ namespace Prometheus.Client
             Inc(increment, null);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Inc(double increment, long? timestamp)
         {
-            if (double.IsNaN(increment))
+            if (ThreadSafeDouble.IsNaN(increment))
                 return;
 
             _value.Add(increment);
@@ -39,6 +41,7 @@ namespace Prometheus.Client
             Set(val, null);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Set(double val, long? timestamp)
         {
             _value.Value = val;
@@ -55,9 +58,10 @@ namespace Prometheus.Client
             Dec(decrement, null);
         }
 
+        [MethodImpl(MethodImplOptions.AggressiveInlining)]
         public void Dec(double decrement, long? timestamp)
         {
-            if (double.IsNaN(decrement))
+            if (ThreadSafeDouble.IsNaN(decrement))
                 return;
 
             _value.Add(-decrement);
