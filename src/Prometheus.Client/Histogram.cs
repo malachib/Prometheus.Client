@@ -10,7 +10,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="IHistogram" />
-    public class Histogram : Collector<Histogram.LabelledHistogram, Histogram.HistogramConfiguration>, IHistogram
+    public class Histogram : Collector<IHistogram, Histogram.LabelledHistogram, Histogram.HistogramConfiguration>, IHistogram
     {
         internal Histogram(HistogramConfiguration configuration)
             : base(configuration)

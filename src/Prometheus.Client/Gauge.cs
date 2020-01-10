@@ -6,7 +6,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="IGauge" />
-    public class Gauge : Collector<Gauge.LabelledGauge, MetricConfiguration>, IGauge
+    public class Gauge : Collector<IGauge, Gauge.LabelledGauge, MetricConfiguration>, IGauge
     {
         internal Gauge(MetricConfiguration configuration)
             : base(configuration)

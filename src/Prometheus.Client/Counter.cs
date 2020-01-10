@@ -7,7 +7,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="ICounter" />
-    public class Counter : Collector<Counter.LabelledCounter, MetricConfiguration>, ICounter
+    public class Counter : Collector<ICounter, Counter.LabelledCounter, MetricConfiguration>, ICounter
     {
         internal Counter(MetricConfiguration configuration)
             : base(configuration)

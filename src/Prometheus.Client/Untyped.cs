@@ -6,7 +6,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="IUntyped" />
-    public class Untyped : Collector<Untyped.LabelledUntyped, MetricConfiguration>, IUntyped
+    public class Untyped : Collector<IUntyped, Untyped.LabelledUntyped, MetricConfiguration>, IUntyped
     {
         internal Untyped(MetricConfiguration configuration)
             : base(configuration)

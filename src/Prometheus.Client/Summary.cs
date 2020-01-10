@@ -12,7 +12,7 @@ using Prometheus.Client.SummaryImpl;
 namespace Prometheus.Client
 {
     /// <inheritdoc cref="ISummary" />
-    public class Summary : Collector<Summary.LabelledSummary, Summary.SummaryConfiguration>, ISummary
+    public class Summary : Collector<ISummary, Summary.LabelledSummary, Summary.SummaryConfiguration>, ISummary
     {
         internal Summary(SummaryConfiguration configuration)
             : base(configuration)

@@ -7,7 +7,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 
 namespace Prometheus.Client.Collectors
 {
-    public abstract class Collector<TChild, TConfig> : ICollector<TChild>
+    public abstract class Collector<TChild, TConfig> : ICollector
         where TChild : Labelled<TConfig>, new()
         where TConfig : MetricConfiguration
     {
@@ -84,6 +84,26 @@ namespace Prometheus.Client.Collectors
             {
                 yield return labelled;
             }
+        }
+    }
+
+    /// <summary>
+    /// Provides an interface to WithLabels
+    /// </summary>
+    /// <typeparam name="TIChild">Interface that this Collector and Labelled&lt;&gt; both implement</typeparam>
+    /// <typeparam name="TChild">Generally of type Labelled&lt;&gt;</typeparam>
+    /// <typeparam name="TConfig"></typeparam>
+    public abstract class Collector<TIChild, TChild, TConfig> : Collector<TChild, TConfig>,
+        ICollector<TIChild>
+        where TChild : Labelled<TConfig>, TIChild, new()
+        where TConfig : MetricConfiguration
+    {
+        TIChild ICollector<TIChild>.WithLabels(params string[] labelValues) =>
+            base.WithLabels(labelValues);
+
+        protected Collector(TConfig configuration)
+            : base(configuration)
+        {
         }
     }
 }
