@@ -101,6 +101,12 @@ namespace Prometheus.Client.Collectors
         TIChild ICollector<TIChild>.WithLabels(params string[] labelValues) =>
             base.WithLabels(labelValues);
 
+        /// <summary>
+        /// EXPERIMENTAL
+        /// Not sure we want to expose this
+        /// </summary>
+        TIChild ICollector<TIChild>.Unlabelled => base.Unlabelled;
+
         protected Collector(TConfig configuration)
             : base(configuration)
         {

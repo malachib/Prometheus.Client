@@ -12,8 +12,11 @@ namespace Prometheus.Client.Collectors.Abstractions
         void Collect(IMetricsWriter writer);
     }
 
-    public interface ICollector<TChild> : ICollector
+    /// <typeparam name="TIChild">Interface to which collector conforms (i.e. ICounter, IHistogram, etc)</typeparam>
+    public interface ICollector<TIChild> : ICollector
     {
-        TChild WithLabels(params string[] labels);
+        TIChild WithLabels(params string[] labels);
+
+        TIChild Unlabelled { get; }
     }
 }
