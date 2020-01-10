@@ -11,4 +11,9 @@ namespace Prometheus.Client.Collectors.Abstractions
 
         void Collect(IMetricsWriter writer);
     }
+
+    public interface ICollector<TChild> : ICollector
+    {
+        TChild WithLabels(params string[] labels);
+    }
 }

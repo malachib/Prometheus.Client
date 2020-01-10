@@ -7,7 +7,7 @@ using Prometheus.Client.MetricsWriter.Abstractions;
 
 namespace Prometheus.Client.Collectors
 {
-    public abstract class Collector<TChild, TConfig> : ICollector
+    public abstract class Collector<TChild, TConfig> : ICollector<TChild>
         where TChild : Labelled<TConfig>, new()
         where TConfig : MetricConfiguration
     {
